@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ski Racing Game</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    
+    <h1>Ski Cross Betting Simulator</h1>
+
+    <div id="roundDisplay">
+        <p>Current Round: <span id="currentRound">1</span> / <span id="totalRounds">3</span></p>
+    </div>
+    <button id="startButton">Start Game</button>
+    <button id="resetButton" style="display: none;">Reset Game</button>
+
+    <div id="gameArea">
+        <div id="leftText">
+            <div id="instructions">
+                <h2>Instructions:<img id="infoButton" src="{{ url_for('static', filename='info.png') }}" alt="More Info" style="cursor: pointer; vertical-align: middle; margin-left: 10px;"></h2></h2>
+                    • Bet on 8 skiers with unique attributes over 3 rounds
+                    <br>
+                    • Use sliders to understand how stats affect skier performance
+                    <br>
+                    • Place bets and watch the race unfold!
+            </div>
+            <div id="detailedInstructions" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h3>Welcome to the Ski Cross Betting Simulator!</h3>
+                    <p>Your goal is to maximize your balance over 3 rounds of betting. Here's how it works:</p>
+                    <ol>
+                        <li>There are 8 skiers, each with 3 unique attributes: speed, talent, and experience.</li>
+                        <li>The ski piste has 6 bumps where skiers can fall or stall.</li>
+                        <li>If a skier falls, they're out of the race. If they stall, they pause for ~2 second before continuing.</li>
+                        <li>Speed is the most important attribute, followed by talent, then experience.</li>
+                        <li>To start, press "Start Game" and view the skiers' stats and odds.</li>
+                        <li>Use the sliders to understand how each stat affects the skiers' performance.</li>
+                        <li>Place your bets on as many skiers as you want, then press "Place Bet" to start the race.</li>
+                        <li>The race ends when 3 skiers (or fewer if others have fallen) cross the finish line.</li>
+                        <li>Skiers reset automatically for the next round.</li>
+                        <li>Try to earn a medal based on your final balance!</li>
+                    </ol>
+                </div>
+            </div>
+            <p><label for="expSlider">Experience (1-10):</label> <input type="range" id="expSlider" min="1" max="10" value="5"> <span id="expOutput">5</span></p>
+            <p id="fallChance">The total fall chance is: <span id="fallChanceOutput">%</span></p>
+        
+            <p><label for="talentSlider">Talent&nbsp;&nbsp;&nbsp; (1-10):</label> <input type="range" id="talentSlider" min="1" max="10" value="5"> <span id="talentOutput">5</span></p>
+            <p id="stallChance">Stall chance per bump: <span id="stallChanceOutput">15%</span>. If stalled: ~2 second delay.</p>
+        
+            <p><label for="speedSlider">Speed&nbsp;&nbsp;&nbsp; (1-10):</label> <input type="range" id="speedSlider" min="1" max="10" value="5"> <span id="speedOutput">5</span></p>
+            <p id="raceTime">The total time taken is: <span id="raceTimeOutput">seconds</span> seconds</p> 
+        </div>
+        <div id="skiSlope">
+            <div class="skier normal" id="skier1" data-skier-id="1"></div>
+            <div class="skier normal" id="skier2" data-skier-id="2"></div>
+            <div class="skier normal" id="skier3" data-skier-id="3"></div>
+            <div class="skier normal" id="skier4" data-skier-id="4"></div>
+            <div class="skier normal" id="skier5" data-skier-id="5"></div>
+            <div class="skier normal" id="skier6" data-skier-id="6"></div>
+            <div class="skier normal" id="skier7" data-skier-id="7"></div>
+            <div class="skier normal" id="skier8" data-skier-id="8"></div>
+        </div>
+        
+        <div id="rightArea">
+            <div id="skierStats"></div> <!-- Div for skier stats -->
+            <div id="tablesContainer">
+                <table>
+                    <tr>
+                        <th>Payouts</th>
+                        <th>if 1st</th>
+                        <th>if 2nd</th>
+                        <th>if 3rd</th>
+                        <th>Bets <img id="betInfoButton" src="{{ url_for('static', filename='infob.png') }}" alt="Bet Info" style="cursor: pointer; vertical-align: middle; margin-left: 5px; width: 40px; height: 40px;"></th>
+                    </tr>
+                    <tr>
+                        <td>Skier 1</td>
+                        <td id="odds1_1"></td>
+                        <td id="odds1_2"></td>
+                        <td id="odds1_3"></td>
+                        <td><input type="number" id="bet1" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Skier 2</td>
+                        <td id="odds2_1"></td>
+                        <td id="odds2_2"></td>
+                        <td id="odds2_3"></td>
+                        <td><input type="number" id="bet2" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Skier 3</td>
+                        <td id="odds3_1"></td>
+                        <td id="odds3_2"></td>
+                        <td id="odds3_3"></td>
+                        <td><input type="number" id="bet3" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Skier 4</td>
+                        <td id="odds4_1"></td>
+                        <td id="odds4_2"></td>
+                        <td id="odds4_3"></td>
+                        <td><input type="number" id="bet4" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Skier 5</td>
+                        <td id="odds5_1"></td>
+                        <td id="odds5_2"></td>
+                        <td id="odds5_3"></td>
+                        <td><input type="number" id="bet5" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Skier 6</td>
+                        <td id="odds6_1"></td>
+                        <td id="odds6_2"></td>
+                        <td id="odds6_3"></td>
+                        <td><input type="number" id="bet6" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Skier 7</td>
+                        <td id="odds7_1"></td>
+                        <td id="odds7_2"></td>
+                        <td id="odds7_3"></td>
+                        <td><input type="number" id="bet7" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Skier 8</td>
+                        <td id="odds8_1"></td>
+                        <td id="odds8_2"></td>
+                        <td id="odds8_3"></td>
+                        <td><input type="number" id="bet8" value="0"></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="balanceAndBet">
+                <p>Balance: $<span id="balance">{{ balance }}</span></p>
+                <button id="betButton">Place Bet</button>
+            </div>
+            
+            <div id="medalBoxesContainer">
+                <div id="medalsAndValues">
+                    <div id="medalBoxes">
+                        <div class="medalBox" id="bronzeMedal"></div>
+                        <div class="medalBox" id="silverMedal"></div>
+                        <div class="medalBox" id="goldMedal"></div>
+                    </div>
+                    <div id="medalValues">
+                        <span>+$100</span>
+                        <span>+$150</span>
+                        <span>+$200</span>
+                    </div>
+                </div>
+                <div id="finalMessage"></div>
+            </div>
+        </div>
+        <div id="scrollPrompt">Scroll down to see Round Results</div>
+    </div>
+
+    <div id="betInstructions" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Sample Betting Strategies</h3>
+            <ul>
+                <li>Spread Equally: $51.01.</li>
+                <li>Top Three: $142.52</li>
+                <li>Bottom Three: $9.61</li>
+                <li>All-in on Favorite: $186.86</li>
+                <li>All-in on Underdog: $2.71</li>
+                <li>Proportional to Odds: $70.03</li>
+                <li>Martingale: $51.61</li>
+                <li>Fibonacci: $75.10</li>
+                <li>D'Alembert: $52.81</li>
+                <li>Paroli: $97.78</li>
+                <li>Progressive Betting: $86.47</li>
+                <li>Kelly Criterion (Favorite Only): $118.08</li>
+                <li>Overall Average: ~$72.20</li>
+
+            </ul>
+        </div>
+    </div>
+
+    <div id="allRoundsResults">
+        <div id="round1Results" class="roundContainer"></div>
+        <div id="round2Results" class="roundContainer"></div>
+        <div id="round3Results" class="roundContainer"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
