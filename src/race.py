@@ -1,8 +1,8 @@
 import random
 import numpy as np
 from itertools import groupby
-from skier import Skier
-from odds import calculate_all_odds
+from .skier import Skier
+from .odds import calculate_all_odds
 
 def run_race(all_skiers, bets, odds):
     fallen_skiers = set()
