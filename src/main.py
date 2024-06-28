@@ -2,9 +2,9 @@ from flask import Flask, render_template, request, jsonify, logging
 import random
 import logging
 import traceback
-from race import run_race, betting, print_bump_status
-from odds import calculate_all_odds
-from skier import Skier
+from .race import run_race, betting, print_bump_status
+from .odds import calculate_all_odds
+from .skier import Skier
 
 app = Flask(__name__, template_folder='../templates',static_folder='../static')
 
