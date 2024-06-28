@@ -1,7 +1,7 @@
 import random
-from race import run_race
-from odds import calculate_all_odds
-from skier import Skier
+from .race import run_race
+from .odds import calculate_all_odds
+from .skier import Skier
 import numpy as np
 
 NUM_SIMULATIONS = 1000
